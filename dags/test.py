@@ -4,6 +4,9 @@ import requests
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 import sys
+
+
+
 sys.path.append("/opt/airflow")
 
 
@@ -21,7 +24,10 @@ def download_netflix(**kwargs):
 
     download_netflix_data()
 
-
+def upload_to_s3():
+    from src.s3_manager import S3Manager
+    s3_manager = S3Manager()
+    s3_manager.upload_directory(DATALAKE_ROOT_FOLDER,  remove_files=True, extension='.csv')
 
 
 default_args = {
@@ -50,6 +56,12 @@ task_scrap_netflix = PythonOperator(
         dag=dag
     )
 
+task_upload_to_s3 = PythonOperator(
+        task_id='upload_to_s3',
+        python_callable=upload_to_s3
 
-task_scrap_netflix
+    )
+
+
+task_scrap_netflix >> task_upload_to_s3
 
