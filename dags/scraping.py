@@ -1,31 +1,18 @@
 import os
-from datetime import date, timedelta
-import requests
+from datetime import timedelta
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 import sys
-
-
-
-sys.path.append("/opt/airflow")
-
-
-
-
 HOME = "/opt/airflow"
 DATALAKE_ROOT_FOLDER = HOME + "/data/"
 
+sys.path.append(HOME)
 
-
-def download_netflix(**kwargs):
-    from src.netflix_downloader import download_netflix_data
-    if not os.path.exists(DATALAKE_ROOT_FOLDER):
-        os.makedirs(DATALAKE_ROOT_FOLDER)
-
-    download_netflix_data()
+from src.scraping.allocine import run_scrap_allocine
+from src.scraping.netflix import download_netflix_data
 
 def upload_to_s3():
-    from src.s3_manager import S3Manager
+    from src.utils.s3_manager import S3Manager
     s3_manager = S3Manager()
     s3_manager.upload_directory(DATALAKE_ROOT_FOLDER,  remove_files=True, extension='.csv')
 
@@ -45,6 +32,7 @@ with DAG(
         description='A simple DAG to fetch IMDb data',
         schedule_interval=None,
         catchup=False,
+        tags=["scraping"]
 ) as dag:
     dag.doc_md = """"
            This is the DAG I used to run my Data Project in airflow.
@@ -52,8 +40,18 @@ with DAG(
 
 task_scrap_netflix = PythonOperator(
         task_id='scrap_netflix',
-        python_callable=download_netflix,
-        dag=dag
+        python_callable=download_netflix_data,
+        dag=dag,
+    )
+
+task_scrap_allocine = PythonOperator(
+        task_id='scrap_allocine',
+        python_callable=run_scrap_allocine,
+        dag=dag,
+        op_kwargs={
+            "num_pages":1
+        }
+
     )
 
 task_upload_to_s3 = PythonOperator(
@@ -63,5 +61,5 @@ task_upload_to_s3 = PythonOperator(
     )
 
 
-task_scrap_netflix >> task_upload_to_s3
+task_scrap_netflix >> task_scrap_allocine >> upload_to_s3
 

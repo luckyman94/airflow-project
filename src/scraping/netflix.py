@@ -2,8 +2,6 @@ import os
 import logging
 import requests
 
-
-
 def fetch_data_from_github(url, **kwargs):
     try:
         logging.info("Starting to fetch data...")
