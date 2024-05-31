@@ -1,4 +1,3 @@
-import os
 from datetime import timedelta
 from airflow import DAG
 from airflow.operators.python import PythonOperator
@@ -29,7 +28,7 @@ default_args = {
 with DAG(
         's3_dag',
         default_args=default_args,
-        description='A simple DAG to fetch IMDb data',
+        description='A simple DAG to fetch data',
         schedule_interval=None,
         catchup=False,
         tags=["scraping"]
@@ -61,5 +60,5 @@ task_upload_to_s3 = PythonOperator(
     )
 
 
-task_scrap_netflix >> task_scrap_allocine >> upload_to_s3
+task_scrap_netflix >> task_scrap_allocine >> task_upload_to_s3
 
