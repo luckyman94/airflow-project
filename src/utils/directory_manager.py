@@ -1,4 +1,5 @@
 import os
+import shutil
 
 from src.utils.s3_manager import S3Manager
 class DirectoryManager:
@@ -21,3 +22,15 @@ class DirectoryManager:
             if not dirs and not files:
                 os.rmdir(root)
                 print(f"Removed empty directory {root}")
+
+    def clean_directory_with_wrong_name(self,directory, name):
+        try:
+            for root, dirs, files in os.walk(directory, topdown=False):
+                for dir_name in dirs:
+                    dir_path = os.path.join(root, dir_name)
+                    if dir_name != name:
+                        shutil.rmtree(dir_path)
+                        print(f"Dossier supprimé : {dir_path}")
+
+        except Exception as e:
+            print(f"Erreur lors de la suppression des dossiers : {e}")
