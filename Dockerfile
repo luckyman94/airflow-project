@@ -8,8 +8,6 @@ RUN apt-get update \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
-
-RUN pip install pyspark
-
 USER airflow
+RUN pip install pyspark
 RUN pip install apache-airflow-providers-amazon

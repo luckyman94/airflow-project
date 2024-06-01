@@ -10,6 +10,12 @@ DATALAKE_ROOT_FOLDER = HOME + "/data/"
 
 sys.path.append(HOME)
 
+def clean_data():
+    from src.utils.directory_manager import DirectoryManager
+    dm = DirectoryManager()
+    dm.remove_files_with_extension(DATALAKE_ROOT_FOLDER,".csv")
+    dm.clean_empty_subdirectories(DATALAKE_ROOT_FOLDER)
+
 def format_data():
     from src.format_file.file_formatter import FileFormatter
     from src.utils.s3_manager import S3Manager
@@ -68,5 +74,11 @@ task_format_data = PythonOperator(
         dag=dag,
     )
 
+task_clean_data_dir = PythonOperator(
+    task_id='clean_data_dir',
+    python_callable=clean_data,
+    dag=dag
+)
 
-task_format_data
+
+task_format_data >> task_clean_data_dir

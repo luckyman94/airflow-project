@@ -1,6 +1,7 @@
 from datetime import timedelta
 from airflow import DAG
 from airflow.operators.python import PythonOperator
+import os
 import sys
 HOME = "/opt/airflow"
 DATALAKE_ROOT_FOLDER = HOME + "/data/"
@@ -10,11 +11,11 @@ sys.path.append(HOME)
 from src.scraping.allocine import run_scrap_allocine
 from src.scraping.netflix import download_netflix_data
 
+
 def upload_to_s3():
     from src.utils.s3_manager import S3Manager
     s3_manager = S3Manager()
     s3_manager.upload_directory(DATALAKE_ROOT_FOLDER,  remove_files=True, extension='.csv')
-
 
 default_args = {
     'depends_on_past': False,
@@ -55,10 +56,12 @@ task_scrap_allocine = PythonOperator(
 
 task_upload_to_s3 = PythonOperator(
         task_id='upload_to_s3',
-        python_callable=upload_to_s3
+        python_callable=upload_to_s3,
+        dag=dag
 
     )
 
 
 task_scrap_netflix >> task_scrap_allocine >> task_upload_to_s3
+
 

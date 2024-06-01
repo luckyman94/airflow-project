@@ -44,20 +44,6 @@ class S3Manager:
                         os.remove(filepath)
                         print(f"Removed {filepath}")
 
-            if remove_files:
-                try:
-                    os.rmdir(root)
-                    print(f"Removed directory {root}")
-                except OSError as e:
-                    print(f"Failed to remove directory {root}: {e}")
-
-        if remove_files:
-            try:
-                if not os.listdir(local_directory):
-                    os.rmdir(local_directory)
-                    print(f"Removed directory {local_directory}")
-            except OSError as e:
-                print(f"Failed to remove directory {local_directory}: {e}")
 
     def delete_file(self, key):
         self.s3.delete_objects(bucket=self.bucket_name,keys=key)
