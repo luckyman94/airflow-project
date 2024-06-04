@@ -41,8 +41,10 @@ with DAG(
            This is the DAG I used to run my Data Project in airflow.
            I can write documentation in Markdown here with *bold text* or _bold text_."""
 
-task_scrap_netflix = PythonOperator(
+task_train_model = PythonOperator(
     task_id='train_model_generate_predictions',
     python_callable=train_model_and_get_recommendations,
     dag=dag,
 )
+
+task_train_model
