@@ -9,5 +9,4 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 USER airflow
-RUN pip install pyspark
-RUN pip install apache-airflow-providers-amazon
+RUN pip install pyspark apache-airflow-providers-amazon scikit-learn nltk
