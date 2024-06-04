@@ -44,10 +44,10 @@ default_args = {
 with DAG(
         'concatenate',
         default_args=default_args,
-        description='A simple DAG to fetch data',
+        description='A simple DAG to combine data',
         schedule_interval=None,
         catchup=False,
-        tags=["scraping"]
+        tags=["preprocessing"]
 ) as dag:
     dag.doc_md = """"
            This is the DAG I used to run my Data Project in airflow.
