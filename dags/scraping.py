@@ -49,7 +49,7 @@ task_scrap_allocine = PythonOperator(
         python_callable=run_scrap_allocine,
         dag=dag,
         op_kwargs={
-            "num_pages":1
+            "num_pages":2
         }
 
     )

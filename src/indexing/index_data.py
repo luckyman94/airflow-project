@@ -95,10 +95,8 @@ if __name__ == '__main__':
 
     with open('recommendations_index.ndjson', 'w') as f:
         for item in data:
-            # Écrire l'opération d'indexation
             index_line = json.dumps({"index": {"_index": item["_index"], "_id": item["_id"]}})
             f.write(index_line + "\n")
-            # Écrire le document source
             source_line = json.dumps(item["_source"])
             f.write(source_line + "\n")
 
