@@ -18,7 +18,6 @@ class ElasticsearchIndexer:
             verify_certs=False,
         )
 
-
     def get_client(self):
         return self.es
     def test_connection(self):
@@ -76,30 +75,31 @@ class ElasticsearchIndexer:
         except Exception as e:
             logging.error("Error saving index to JSON:", exc_info=True)
 
+    def convert_json_to_ndjson(self, jsonpath):
+        with open(jsonpath, 'r') as f :
+            data = json.load(f)
+
+        with open('recommendations_index.ndjson', 'w') as f:
+            for item in data:
+                index_line = json.dumps({"index": {"_index": item["_index"], "_id": item["_id"]}})
+                f.write(index_line + "\n")
+                source_line = json.dumps(item["_source"])
+                f.write(source_line + "\n")
+
+
+
+
 if __name__ == '__main__':
-    #mapping = {
-    #
-    #}
-    ##indexer = ElasticsearchIndexer()
-    ##client = indexer.get_client()
-    #indexer.test_connection()
-    #indexer.index_from_parquet("recommendations.parquet")
-    #indexer.save_index_to_json("recommendations_index.json")
-    #client.indices.create(index="recommendations")
 
-
-    #Convert to ndjson
-
-    with open('recommendations_index.json', 'r') as f:
-        data = json.load(f)
-
-    with open('recommendations_index.ndjson', 'w') as f:
-        for item in data:
-            index_line = json.dumps({"index": {"_index": item["_index"], "_id": item["_id"]}})
-            f.write(index_line + "\n")
-            source_line = json.dumps(item["_source"])
-            f.write(source_line + "\n")
+    filepath = "recommendations.parquet"
+    jsonpath = "recommendations.json"
+    indexer = ElasticsearchIndexer()
+    client = indexer.get_client()
+    indexer.index_from_parquet(filepath)
+    indexer.save_index_to_json(jsonpath)
+    client.indices.create(index="recommendations")
+    indexer.convert_json_to_ndjson(jsonpath)
 
 
     #To export the file we have to do this : curl -H "Content-Type: application/x-ndjson" -XPOST "localhost:9200/recommendations/_bulk" --data-binary @/Users/ilan/airflow-docker/src/indexing/recommendations_index.ndjson
-    # Verifier importation curl -X GET "localhost:9200/recommendations/_search?pretty"
+    # To verify curl -X GET "localhost:9200/recommendations/_search?pretty"

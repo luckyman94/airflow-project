@@ -30,7 +30,7 @@ class DirectoryManager:
                     dir_path = os.path.join(root, dir_name)
                     if dir_name != name:
                         shutil.rmtree(dir_path)
-                        print(f"Dossier supprimé : {dir_path}")
+                        print(f"Directory has been deleted : {dir_path}")
 
         except Exception as e:
-            print(f"Erreur lors de la suppression des dossiers : {e}")
+            print(f"Error while deleting files : {e}")

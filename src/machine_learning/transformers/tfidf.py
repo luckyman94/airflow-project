@@ -26,7 +26,7 @@ class TFIDFTransformer(BaseEstimator, TransformerMixin):
         self.tfidf_matrix = svd_result
         tfidf_df = pd.DataFrame(self.tfidf_matrix,
                                 columns=[f"{self.column}_tfidf_{i}" for i in range(self.n_components)])
-        X = pd.concat([X, tfidf_df], axis="columns")
+        X = pd.concat([X.reset_index(drop=True), tfidf_df.reset_index(drop=True)], axis=1)
         return X
 
     def get_tfidf_matrix(self):
