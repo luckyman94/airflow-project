@@ -38,7 +38,7 @@ class RecommendationModel:
 
         if export:
             df = pd.DataFrame(recommendations)
-            data_folder = "/opt/airflow/data/"
+            data_folder = "/opt/airflow/src/indexing/"
             df.to_parquet(data_folder +"recommendations.parquet", index=False)
             self.s3_manager.upload_file('recommendations.parquet', data_folder +"recommendations.parquet")
 
