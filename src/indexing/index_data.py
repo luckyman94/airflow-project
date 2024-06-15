@@ -97,7 +97,7 @@ if __name__ == '__main__':
     client = indexer.get_client()
     indexer.index_from_parquet(filepath)
     indexer.save_index_to_json(jsonpath)
-    client.indices.create(index="recommendations")
+    # client.indices.create(index="recommendations")
     indexer.convert_json_to_ndjson(jsonpath)
 
 
